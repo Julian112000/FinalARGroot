@@ -11,9 +11,9 @@ public enum Team
 [CreateAssetMenu(fileName = "Data", menuName = "Mapunits/unit", order = 1)]
 public class MapUnitData : ScriptableObject
 {
-    public int id;
-    public string name;
-    public string desc;
-    public Sprite icon;
-    public GameObject[] model;
+    public int id;              //id
+    public string name;         //name          
+    public string desc;         //description
+    public Sprite icon;         //icon image
+    public GameObject[] model;  //3d model
 }

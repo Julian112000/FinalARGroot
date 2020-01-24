@@ -1006,8 +1006,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c699b8e1864b4b248acb7a04ede9480, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testlanmyloc: 52.158843
-  testlonmyloc: 5.359311
   _panSpeed: 1
   _zoomSpeed: 1
   _referenceCamera: {fileID: 273233930}
@@ -1029,7 +1027,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f186a3c999398b64fa9e6827d957d9a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: http://juliankorevaar.nl/AndroidApp/
+  url: 
 --- !u!1 &593538786
 GameObject:
   m_ObjectHideFlags: 0
@@ -1609,42 +1607,42 @@ PrefabInstance:
     - target: {fileID: 7769829225004846498, guid: 659d560ec9f98bb488b9d2ed9fb3d2ac,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7769829225004846498, guid: 659d560ec9f98bb488b9d2ed9fb3d2ac,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7769829225004846498, guid: 659d560ec9f98bb488b9d2ed9fb3d2ac,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 118.1
       objectReference: {fileID: 0}
     - target: {fileID: 7769829225004846498, guid: 659d560ec9f98bb488b9d2ed9fb3d2ac,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -41.55
       objectReference: {fileID: 0}
     - target: {fileID: 413594966750647659, guid: 659d560ec9f98bb488b9d2ed9fb3d2ac,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 413594966750647659, guid: 659d560ec9f98bb488b9d2ed9fb3d2ac,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 413594966750647659, guid: 659d560ec9f98bb488b9d2ed9fb3d2ac,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 118.1
       objectReference: {fileID: 0}
     - target: {fileID: 413594966750647659, guid: 659d560ec9f98bb488b9d2ed9fb3d2ac,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -175.7
       objectReference: {fileID: 0}
     - target: {fileID: 805020639758170271, guid: 659d560ec9f98bb488b9d2ed9fb3d2ac,
         type: 3}

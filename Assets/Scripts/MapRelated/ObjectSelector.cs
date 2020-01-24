@@ -6,29 +6,33 @@ using UnityEngine.EventSystems;
 
 public class ObjectSelector : MonoBehaviour
 {
+    //Instance of ObjectSelector when called to select objects
     public static ObjectSelector Instance;
 
+    //current selected object
     public MapUnit selectedObject;
+    //called when mouse is hovering over object
     public bool isHovering;
 
     //Visualisation
     [SerializeField]
-    private Text nametext;
+    private Text nametext;          //Text component of current selected unit's name
     [SerializeField]
-    private Text idtext;
+    private Text idtext;            //Text component of current selected unit's ID
     [SerializeField]
-    private Image iconimage;
+    private Image iconimage;        //Image component of current selected unit's icon
     [SerializeField]
-    private Slider rotationSlider;
+    private Slider rotationSlider;  //Slider component for rotation
 
     //Route
     [SerializeField]
-    private string[] routenames;
+    private string[] routenames;    //string component either 'delete' or 'create' route
     [SerializeField]
-    private Text routeText;
+    private Text routeText;         //Text component of route either 'delete' or 'create'
 
     private void Awake()
     {
+        //set instance to this script when game started
         Instance = this;
         gameObject.SetActive(false);
     }

@@ -5,12 +5,15 @@ using UnityEngine.UI;
 
 public class MapUnitDataToText : MonoBehaviour
 {
+    //Mapunit Data 
     public MapUnitData model;
 
-    public Text idUI;
-    public Text nameUI;
-    public Image iconUI;
+    public Text idUI;       //Text component of id number
+    public Text nameUI;     //Text component of name string
+    public Image iconUI;    //Image component of icon image
 
+
+    //bool to check
     [SerializeField]
     private bool isSearched;
 

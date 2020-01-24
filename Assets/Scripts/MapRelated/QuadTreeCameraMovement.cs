@@ -13,99 +13,113 @@
 
     public class QuadTreeCameraMovement : MonoBehaviour
 	{
+        //Instance of camera movement
         public static QuadTreeCameraMovement Instance;
 
-        [SerializeField]
-        private double testlanmyloc = 52.15884d;
-        [SerializeField]
-        private double testlonmyloc = 5.359311d;
-
+        //How fast the tiles will be loaded
         [SerializeField]
 		[Range(1, 20)]
 		public float _panSpeed = 1.0f;
 
+        //value of how fast you can scroll up and down
 		[SerializeField]
 		float _zoomSpeed = 0.25f;
 
+
+        //reference to the second UI camera
 		[SerializeField]
 		public Camera _referenceCamera;
-
+        //reference to the mapmanager script
 		[SerializeField]
 		AbstractMap _mapManager;
 
+        //bool to check on if you use degree method instead of a meter conversion
 		[SerializeField]
 		bool _useDegreeMethod;
 
-		private Vector3 _origin;
-		private Vector3 _mousePosition;
-		private Vector3 _mousePositionPrevious;
-		private bool _shouldDrag;
-		private bool _isInitialized = false;
-		private Plane _groundPlane = new Plane(Vector3.up, 0);
-		private bool _dragStartedOnUI = false;
+		private Vector3 _origin;                                //origin of the map
+		private Vector3 _mousePosition;                         //Global mouseposition to set to mouseposition
+		private Vector3 _mousePositionPrevious;                 //Previous global mouseposition to set the previous mouseposition
+		private bool _shouldDrag;                               //Bool to check if you should drag or not
+		private bool _isInitialized = false;                    //Bool to check if map is initialized or not
+		private Plane _groundPlane = new Plane(Vector3.up, 0);  //Main grouldplane of the map
+		private bool _dragStartedOnUI = false;                  //Bool to check if you started to use an UI element
 
+        //main bool to check if you are creating a route
         public bool creatingRoute;
+        //object that follows the map reletative to the world map
         public Transform followObjectMouse;
+        //team id [0= allie, 1 = opfor]
         [SerializeField]
         private int teamId;
+        //Text component of team id
         [SerializeField]
         private Text teamText;
 
         void Awake()
 		{
+            //set instance to this script in the beginning
             Instance = this;
 
+            //when referencecamera is 0, get the reference camera from the component
             if (null == _referenceCamera)
 			{
 				_referenceCamera = GetComponent<Camera>();
 				if (null == _referenceCamera) { Debug.LogErrorFormat("{0}: reference camera not set", this.GetType().Name); }
 			}
+            //event to check if the map is initialized
             _mapManager.OnInitialized += () =>
             {
+                //if so return to true
                 _isInitialized = true;
             };
 
         }
         public void Update()
 		{
+            //when mouse down check the bool '_dragStartedOnUI'
 			if (Input.GetMouseButtonDown(0) && EventSystem.current.IsPointerOverGameObject())
 			{
 				_dragStartedOnUI = true;
 			}
-
+            //when the mouse is released, return to false
 			if (Input.GetMouseButtonUp(0))
 			{
 				_dragStartedOnUI = false;
 			}
-
+            //set followobjectmouse object with mouse position on world map
             followObjectMouse.transform.localPosition = _mapManager.GeoToWorldPosition(ReturnMousePos(), true);
         }
 
 
 		private void LateUpdate()
 		{
+            //wait till initialized otherwise return
 			if (!_isInitialized) { return; }
 
 			if (!_dragStartedOnUI)
 			{
 				if (Input.touchSupported && Input.touchCount > 0)
 				{
+                    //only handle touch when touch is supported and touch has more counts than 0
 					HandleTouch();
 				}
 				else
 				{
+                    //use mouse and keyboard when touch is not supported
 					HandleMouseAndKeyBoard();
 				}
 			}
 		}
         public void ChangeTeam(int team)
         {
+            //change team from 'Allie' to 'Opfor'
             teamId += team;
             if (teamId > 1)
                 teamId = 0;
             else if (teamId < 0)
                 teamId = 1;
-            //
+            //set UI text to this teamid
             teamText.text = "" + (Team)teamId;
         }
         void HandleMouseAndKeyBoard()
@@ -164,12 +178,13 @@
 					break;
 			}
 		}
-
+        //Zoom function with touch or mouse elements
 		void ZoomMapUsingTouchOrMouse(float zoomFactor)
 		{
 			float zoom = Mathf.Max(0.0f, Mathf.Min(_mapManager.Zoom + zoomFactor * _zoomSpeed, 21.0f));
 			if (Math.Abs(zoom - _mapManager.Zoom) > 0.0f)
 			{
+                //update map relieable to zoom function
 				_mapManager.UpdateMap(_mapManager.CenterLatitudeLongitude, zoom);
 			}
 		}
@@ -195,33 +210,41 @@
 		{
 			if (_useDegreeMethod)
 			{
+                //when degreemethod is used use Degree conversion
 				UseDegreeConversion();
 			}
 			else
 			{
-				UseMeterConversion();
+                //when degreemethod is not used use Meter conversion
+                UseMeterConversion();
 			}
 		}
-		void UseMeterConversion()
+        #region MeterConversion
+        void UseMeterConversion()
 		{
+            //Spawn Object when: mouse button is released, has current data, is not pointing over other objects and is not creating route
 			if (Input.GetMouseButtonUp(1) && CurrentSelectedModel.Instance.currentData && !EventSystem.current.IsPointerOverGameObject() && !creatingRoute)
 			{
+                //set mouseposscreen to vector3 mouseposition
 				Vector3 mousePosScreen = Input.mousePosition;
 
 				mousePosScreen.z = _referenceCamera.transform.localPosition.y;
 				Vector3 pos = _referenceCamera.ScreenToWorldPoint(mousePosScreen);
 
+                //return worldtogeoposition to latlongdelta
 				Vector2d latlongDelta = _mapManager.WorldToGeoPosition(pos);
                 Location location = LocationProviderFactory.Instance.DefaultLocationProvider.CurrentLocation;
 
-                GetUnityLocation(testlanmyloc, testlonmyloc, "MYLOCATION");
+                //return UnityLocation with latitude and longitude as a vector3
                 GetUnityLocation(latlongDelta.x, latlongDelta.y, "OBJECT" );
 
+                //Spawn object on map with rithgt model, position, zoom and height
                 SpawnOnMap.Instance.SpawnObject(teamId, CurrentSelectedModel.Instance.currentData.model[teamId], latlongDelta, getAltitudeHeightLevel(latlongDelta.x, latlongDelta.y, _mapManager.Zoom), 0);
 
                 //Debug.Log("Latitude: " + latlongDelta.x + " Longitude: " + latlongDelta.y + " Altitude: " + getAltitudeHeightLevel(latlongDelta.x, latlongDelta.y, _mapManager.Zoom));
 			}
 
+            //Move over map with scroll middle mouse button and is not pointing over object
 			if (Input.GetMouseButton(2) && !EventSystem.current.IsPointerOverGameObject())
 			{
 				Vector3 mousePosScreen = Input.mousePosition;
@@ -231,23 +254,28 @@
 
 				if (_shouldDrag == false)
 				{
+                    //change origin relative with referencecamera and mouse position
 					_shouldDrag = true;
 					_origin = _referenceCamera.ScreenToWorldPoint(mousePosScreen);
 				}
 			}
 			else
 			{
+                //when pointing over object, cancel dragging
 				_shouldDrag = false;
 			}
 
 			if (_shouldDrag == true)
 			{
+                //calculate mousepositionprevious minus mouseposition
 				Vector3 changeFromPreviousPosition = _mousePositionPrevious - _mousePosition;
 				if (Mathf.Abs(changeFromPreviousPosition.x) > 0.0f || Mathf.Abs(changeFromPreviousPosition.y) > 0.0f)
 				{
+                    //set new offset with origin and mouseposition
 					_mousePositionPrevious = _mousePosition;
 					Vector3 offset = _origin - _mousePosition;
 
+                    //check if abs offset is later and z is larger
 					if (Mathf.Abs(offset.x) > 0.0f || Mathf.Abs(offset.z) > 0.0f)
 					{
 						if (null != _mapManager)
@@ -264,22 +292,27 @@
 							_mapManager.UpdateMap(newLatLong, _mapManager.Zoom);
 						}
 					}
+                    //set origin to mouseposition
 					_origin = _mousePosition;
 				}
 				else
 				{
+                    //if hovering over an UI element return
 					if (EventSystem.current.IsPointerOverGameObject())
 					{
 						return;
 					}
+                    //set latest data to positionprevious and origin
 					_mousePositionPrevious = _mousePosition;
 					_origin = _mousePosition;
 				}
 			}
 		}
-
-		void UseDegreeConversion()
+        #endregion
+        #region DegreeConversion
+        void UseDegreeConversion()
 		{
+            //
 			if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject())
 			{
 				var mousePosScreen = Input.mousePosition;
@@ -337,15 +370,19 @@
 				}
 			}
 		}
+        #endregion
 
-		private Vector3 getGroundPlaneHitPoint(Ray ray)
+        //get ground plane with raycast down to get height on map elevation
+        private Vector3 getGroundPlaneHitPoint(Ray ray)
 		{
+            //calculate distance with ground and object
 			float distance;
 			if (!_groundPlane.Raycast(ray, out distance)) { return Vector3.zero; }
 			return ray.GetPoint(distance);
 		}
         public float getAltitudeHeightLevel(double lat, double lon, float zoom)
         {
+            //
             UnwrappedTileId tileIDUnwrapped = TileCover.CoordinateToTileId(new Mapbox.Utils.Vector2d(lat, lon), (int)zoom);
 
             //get tile
@@ -398,6 +435,7 @@
             mousePosScreen.z = _referenceCamera.transform.localPosition.y;
             Vector3 pos = _referenceCamera.ScreenToWorldPoint(mousePosScreen);
 
+            //set latlongdelta from worldgeoposition 
             Vector2d latlongDelta = _mapManager.WorldToGeoPosition(pos);
 
             return latlongDelta;
