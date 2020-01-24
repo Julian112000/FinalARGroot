@@ -5,7 +5,7 @@ using UnityEngine;
 public class SaveButton : MonoBehaviour
 {
     [SerializeField]
-    private GameObject saveCanvas;
+    private GameObject saveCanvas, normalCanvas;
 
 
     public void saveCanvasOpen()
@@ -13,6 +13,7 @@ public class SaveButton : MonoBehaviour
         if (!saveCanvas.activeSelf)
         {
             saveCanvas.SetActive(true);
+            normalCanvas.GetComponent<Animator>().SetTrigger("CloseBar");
         }
         else
         {
@@ -22,6 +23,7 @@ public class SaveButton : MonoBehaviour
 
     public void saveCanvasClose()
     {
-        saveCanvas.SetActive(false);
+        normalCanvas.SetActive(true);
+        saveCanvas.GetComponent<Animator>().SetTrigger("CloseSave");
     }
 }
